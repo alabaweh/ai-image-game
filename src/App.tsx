@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { gameConfig } from './gameConfig';
+import { getShuffledLevels } from './gameConfig';
 import { GameState, ImageData } from './types';
 import { Collage } from './components/Collage';
 import { Results } from './components/Results';
@@ -47,54 +47,60 @@ const HintText = styled.span`
 const App: React.FC = () => {
     const [gameState, setGameState] = useState<GameState>({
         currentLevel: 0,
-        selectedImages: new Set(),
-        isChecking: false,
-        showResults: false
+        selectedImages: new Set<number>(),
+        isGameOver: false
     });
 
-    const currentLevel = gameConfig.levels[gameState.currentLevel];
+    const currentLevel = getShuffledLevels()[gameState.currentLevel];
     const correctAnswers = new Set<number>(
         currentLevel.images
-            .map((img: ImageData, index: number) => img.isAI ? index : null)
-            .filter((index: number | null): index is number => index !== null)
+            .map((image, index) => ({ ...image, index }))
+            .filter(img => img.isAI)
+            .map(img => img.index)
     );
+    const isLastLevel = gameState.currentLevel === getShuffledLevels().length - 1;
+    const nextLevel = gameState.currentLevel + 1;
 
-    const handleSelect = (index: number) => {
-        if (gameState.isChecking) return;
+    const handleImageSelect = (index: number) => {
+        if (gameState.isGameOver) return;
 
-        setGameState(prev => {
-            const newSelected = new Set(prev.selectedImages);
-            if (newSelected.has(index)) {
-                newSelected.delete(index);
-            } else {
-                newSelected.add(index);
-            }
-            return { ...prev, selectedImages: newSelected };
+        const newSelectedImages = new Set(gameState.selectedImages);
+        if (newSelectedImages.has(index)) {
+            newSelectedImages.delete(index);
+        } else {
+            newSelectedImages.add(index);
+        }
+
+        setGameState(prev => ({
+            ...prev,
+            selectedImages: newSelectedImages
+        }));
+    };
+
+    const handleNextLevel = () => {
+        if (isLastLevel) {
+            setGameState(prev => ({
+                ...prev,
+                isGameOver: true
+            }));
+        } else {
+            setGameState(prev => ({
+                ...prev,
+                currentLevel: nextLevel,
+                selectedImages: new Set<number>()
+            }));
+        }
+    };
+
+    const handleRestart = () => {
+        setGameState({
+            currentLevel: 0,
+            selectedImages: new Set<number>(),
+            isGameOver: false
         });
     };
 
-    const handleCheck = () => {
-        setGameState(prev => ({
-            ...prev,
-            isChecking: true,
-            showResults: true
-        }));
-    };
-
-    const handleNext = () => {
-        setGameState(prev => ({
-            currentLevel: (prev.currentLevel + 1) % gameConfig.levels.length,
-            selectedImages: new Set(),
-            isChecking: false,
-            showResults: false
-        }));
-    };
-
-    const progress = ((gameState.currentLevel + 1) / gameConfig.levels.length) * 100;
-
-    const isLastLevel = gameState.currentLevel === gameConfig.levels.length - 1;
-    const nextLevel = gameConfig.levels[gameState.currentLevel + 1];
-    const isFirstLevel = gameState.currentLevel === 0;
+    const progress = ((gameState.currentLevel + 1) / getShuffledLevels().length) * 100;
 
     return (
         <Container>
@@ -105,7 +111,7 @@ const App: React.FC = () => {
 
             <GameContainer>
                 <LevelIndicator>
-                    Level {gameState.currentLevel + 1} of {gameConfig.levels.length}
+                    Level {gameState.currentLevel + 1} of {getShuffledLevels().length}
                 </LevelIndicator>
 
                 <AnimatePresence mode="wait">
@@ -119,15 +125,15 @@ const App: React.FC = () => {
                         <Collage
                             images={currentLevel.images}
                             selectedImages={gameState.selectedImages}
-                            onSelect={handleSelect}
-                            isChecking={gameState.isChecking}
+                            onSelect={handleImageSelect}
+                            isChecking={false}
                             correctAnswers={correctAnswers}
                         />
                     </motion.div>
                 </AnimatePresence>
 
                 <Controls>
-                    {!gameState.showResults && (
+                    {!gameState.isGameOver && (
                         <Instructions
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -137,27 +143,26 @@ const App: React.FC = () => {
                             <HintText>Look for inconsistencies in lighting and details</HintText>
                         </Instructions>
                     )}
-                    <Button
-                        variant="primary"
-                        onClick={handleCheck}
-                        disabled={gameState.isChecking || gameState.selectedImages.size === 0}
-                    >
-                        {gameState.selectedImages.size === 0 ? 'Select Images to Check' : 'Check Answers'}
-                    </Button>
-                    {gameState.showResults && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
+                    {!gameState.isGameOver && (
+                        <Button
+                            variant="primary"
+                            onClick={handleNextLevel}
+                            disabled={gameState.selectedImages.size === 0}
                         >
-                            <Button variant="success" onClick={handleNext}>
-                                Next Level
-                            </Button>
-                        </motion.div>
+                            {gameState.selectedImages.size === 0 ? 'Select Images' : 'Next Level'}
+                        </Button>
+                    )}
+                    {gameState.isGameOver && (
+                        <Button
+                            variant="success"
+                            onClick={handleRestart}
+                        >
+                            Restart
+                        </Button>
                     )}
                 </Controls>
 
-                {gameState.showResults && (
+                {gameState.isGameOver && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

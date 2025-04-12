@@ -16,8 +16,7 @@ export interface Level {
 export interface GameState {
     currentLevel: number;
     selectedImages: Set<number>;
-    isChecking: boolean;
-    showResults: boolean;
+    isGameOver: boolean;
 }
 
 export interface CollageProps {
