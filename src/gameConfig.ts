@@ -289,7 +289,7 @@ export const gameConfig: GameConfig = {
             images: [
                 {
                     id: 1,
-                    src: '/images/Sunglasses.heic',
+                    src: '/images/Sunglasses.png',
                     isAI: false,
                     explanation: 'This is a real photograph of sunglasses. Notice the natural reflections and lighting.'
                 },
@@ -308,7 +308,7 @@ export const gameConfig: GameConfig = {
             images: [
                 {
                     id: 1,
-                    src: '/images/hockey_two.heic',
+                    src: '/images/hockey_two.png',
                     isAI: false,
                     explanation: 'This is a real photograph of a hockey scene. Notice the natural movement and lighting.'
                 },
@@ -327,7 +327,7 @@ export const gameConfig: GameConfig = {
             images: [
                 {
                     id: 1,
-                    src: '/images/rome.heic',
+                    src: '/images/rome.png',
                     isAI: false,
                     explanation: 'This is a real photograph of Rome. Notice the natural architecture and lighting.'
                 },
