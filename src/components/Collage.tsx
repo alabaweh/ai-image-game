@@ -14,6 +14,40 @@ const CollageContainer = styled.div`
     margin: 0 auto;
 `;
 
+const FeedbackIcon = styled(motion.div)<{ isCorrect: boolean }>`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: ${props => props.isCorrect ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'};
+    color: white;
+    font-size: 2rem;
+    z-index: 3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+`;
+
+const ImageLabel = styled(motion.div)<{ isAI: boolean }>`
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: ${props => props.isAI ? 'rgba(244, 67, 54, 0.9)' : 'rgba(76, 175, 80, 0.9)'};
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+`;
+
 const CollageItem = styled(motion.div)<{ 
     isSelected: boolean; 
     isChecking: boolean; 
@@ -114,6 +148,7 @@ export const Collage: React.FC<CollageProps> = ({ images, selectedImages, onSele
             {images.map((image, index) => {
                 const isSelected = selectedImages.has(index);
                 const isCorrect = correctAnswers?.has(index) || false;
+                const showFeedback = isChecking && (isSelected || isCorrect);
 
                 return (
                     <CollageItem
@@ -140,6 +175,26 @@ export const Collage: React.FC<CollageProps> = ({ images, selectedImages, onSele
                             onLoad={() => handleImageLoad(index)}
                             onError={() => handleImageError(index)}
                         />
+                        {showFeedback && (
+                            <FeedbackIcon
+                                isCorrect={isSelected === isCorrect}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                            >
+                                {isSelected === isCorrect ? '✓' : '✕'}
+                            </FeedbackIcon>
+                        )}
+                        {isChecking && (
+                            <ImageLabel
+                                isAI={image.isAI}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.3, duration: 0.3 }}
+                            >
+                                {image.isAI ? 'AI Generated' : 'Real Image'}
+                            </ImageLabel>
+                        )}
                     </CollageItem>
                 );
             })}

@@ -1,4 +1,5 @@
 export interface ImageData {
+    id: number;
     src: string;
     isAI: boolean;
     explanation: string;
@@ -6,6 +7,7 @@ export interface ImageData {
 }
 
 export interface Level {
+    id: number;
     title: string;
     images: ImageData[];
     layout: 'grid-2' | 'grid-3' | 'grid-4' | 'grid-5' | 'grid-6';

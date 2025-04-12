@@ -19,27 +19,52 @@ A web-based game that challenges players to distinguish between AI-generated and
 - Framer Motion
 - Vite
 
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Node.js (version 14 or higher)
+- npm (comes with Node.js)
+- Git (for version control)
+
 ## Getting Started
 
-1. Clone the repository:
+1. **Clone the repository**:
 ```bash
-git clone https://github.com/yourusername/ai-image-game.git
+git clone https://github.com/alabaweh/ai-image-game.git
 cd ai-image-game
 ```
 
-2. Install dependencies:
+2. **Install dependencies**:
 ```bash
 npm install
 ```
 
-3. Start the development server:
+3. **Start the development server**:
 ```bash
 npm run dev
 ```
+This will start the development server at `http://localhost:5173`
 
-4. Build for production:
+4. **Build for production**:
 ```bash
 npm run build
+```
+This will create a production-ready build in the `dist` directory.
+
+## Project Structure
+
+```
+ai-image-game/
+├── public/              # Static assets
+│   └── images/          # Game images
+├── src/                 # Source code
+│   ├── components/      # React components
+│   ├── styles/         # Styled components
+│   ├── types/          # TypeScript types
+│   ├── App.tsx         # Main application component
+│   └── main.tsx        # Application entry point
+├── package.json        # Project dependencies
+└── tsconfig.json       # TypeScript configuration
 ```
 
 ## How to Play
@@ -49,10 +74,28 @@ npm run build
 3. Read the explanations to learn about the characteristics of AI-generated images
 4. Move on to the next level to test your skills further
 
+## Tips for Playing
+
+- Look for inconsistencies in lighting and shadows
+- Check for unusual patterns or textures
+- Pay attention to details like hair, skin, and background elements
+- Compare similar elements across images
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Thanks to all contributors who have helped improve this game
+- Special thanks to the creators of the images used in this game

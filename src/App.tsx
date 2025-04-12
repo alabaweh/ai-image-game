@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gameConfig } from './gameConfig';
-import { GameState } from './types';
+import { GameState, ImageData } from './types';
 import { Collage } from './components/Collage';
 import { Results } from './components/Results';
 import {
@@ -52,11 +52,11 @@ const App: React.FC = () => {
         showResults: false
     });
 
-    const currentLevel = gameConfig[gameState.currentLevel];
-    const correctAnswers = new Set(
+    const currentLevel = gameConfig.levels[gameState.currentLevel];
+    const correctAnswers = new Set<number>(
         currentLevel.images
-            .map((img, index) => img.isAI ? index : null)
-            .filter((index): index is number => index !== null)
+            .map((img: ImageData, index: number) => img.isAI ? index : null)
+            .filter((index: number | null): index is number => index !== null)
     );
 
     const handleSelect = (index: number) => {
@@ -83,14 +83,18 @@ const App: React.FC = () => {
 
     const handleNext = () => {
         setGameState(prev => ({
-            currentLevel: (prev.currentLevel + 1) % gameConfig.length,
+            currentLevel: (prev.currentLevel + 1) % gameConfig.levels.length,
             selectedImages: new Set(),
             isChecking: false,
             showResults: false
         }));
     };
 
-    const progress = ((gameState.currentLevel + 1) / gameConfig.length) * 100;
+    const progress = ((gameState.currentLevel + 1) / gameConfig.levels.length) * 100;
+
+    const isLastLevel = gameState.currentLevel === gameConfig.levels.length - 1;
+    const nextLevel = gameConfig.levels[gameState.currentLevel + 1];
+    const isFirstLevel = gameState.currentLevel === 0;
 
     return (
         <Container>
@@ -101,7 +105,7 @@ const App: React.FC = () => {
 
             <GameContainer>
                 <LevelIndicator>
-                    Level {gameState.currentLevel + 1} of {gameConfig.length}
+                    Level {gameState.currentLevel + 1} of {gameConfig.levels.length}
                 </LevelIndicator>
 
                 <AnimatePresence mode="wait">
@@ -159,11 +163,11 @@ const App: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
                     >
-                        <Results results={currentLevel.images.map((image, index) => ({
+                        <Results results={currentLevel.images.map((image: ImageData, index: number) => ({
                             image,
                             index,
                             isSelected: gameState.selectedImages.has(index),
-                            isCorrect: gameState.selectedImages.has(index) === correctAnswers.has(index)
+                            isCorrect: image.isAI === gameState.selectedImages.has(index)
                         }))} />
                     </motion.div>
                 )}
